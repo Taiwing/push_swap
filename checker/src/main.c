@@ -6,7 +6,7 @@
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 10:37:50 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/22 15:26:32 by yforeau          ###   ########.fr       */
+/*   Updated: 2019/11/22 16:52:58 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,6 @@ int			main(int argc, char **argv)
 		if (*argv || check_instructions(&stack))
 			ft_exit("Error", 1);
 	}
+	ft_heap_collector(NULL, FT_COLLEC_FREE);
 	return (0);
 }

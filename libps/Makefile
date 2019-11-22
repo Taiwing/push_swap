@@ -5,15 +5,16 @@ CFLAGS		=	-Wall -Wextra -Werror
 #CFLAGS		=	-g
 HDIR		=	includes
 SRCDIR		=	src
-SUB1D		=	../libps
-SUB2D		=	../libft
-HFLAGS		=	-I $(HDIR) -I $(SUB1D)/$(HDIR) -I $(SUB2D)/$(HDIR)
-LIBS		=	$(SUB1D)/libps.a $(SUB2D)/libft.a
-NAME		=	checker
+SUB1D		=	../libft
+HFLAGS		=	-I $(HDIR) -I $(SUB1D)/$(HDIR)
+LIBS		=	$(SUB1D)/libft.a
+NAME		=	libps.a
 
 ############################## SOURCES #########################################
 
-SRCC			=	main.c\
+SRCC			=	add_to_stack.c\
+					check_instructions.c\
+					instructions.c\
 
 ODIR			=	obj
 OBJ				=	$(patsubst %.c,%.o,$(SRCC))
@@ -21,23 +22,22 @@ OBJ				=	$(patsubst %.c,%.o,$(SRCC))
 vpath			%.o	$(ODIR)
 vpath			%.h	$(HDIR)
 vpath			%.h	$(SUB1D)/$(HDIR)
-vpath			%.h	$(SUB2D)/$(HDIR)
 vpath			%.c	$(SRCDIR)
 
 ############################## BUILD ###########################################
 
 all: $(NAME)
 
-$(NAME): $(SUB1D)/libps.a $(SUB2D)/libft.a $(ODIR) $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $(patsubst %.o,$(ODIR)/%.o,$(OBJ)) $(LIBS)
+$(NAME): $(SUB1D)/libft.a $(ODIR) $(OBJ)
+	ar rc $@ $(patsubst %.o,$(ODIR)/%.o,$(OBJ))
+	ranlib $@
 
-$(SUB1D)/libps.a:
+$(SUB1D)/libft.a:
 	make -C $(SUB1D)
 
-$(SUB2D)/libft.a:
-	make -C $(SUB2D)
-
-main.o: add_to_stack.h check_instructions.h
+add_to_stack.o: libft.h
+check_instructions.o: instructions.h libft.h
+instructions.o: libft.h
 %.o: %.c
 	@mkdir -p $(ODIR)
 	$(CC) -c $(CFLAGS) $< $(HFLAGS) -o $(ODIR)/$@
@@ -50,7 +50,6 @@ $(ODIR):
 clean:
 	rm -rf $(ODIR)
 	make -C $(SUB1D) fclean
-	make -C $(SUB2D) fclean
 
 fclean: clean
 	rm -f $(NAME)
