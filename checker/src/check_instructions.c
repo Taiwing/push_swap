@@ -6,7 +6,7 @@
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 10:35:38 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/22 14:47:48 by yforeau          ###   ########.fr       */
+/*   Updated: 2019/11/22 15:32:57 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,12 @@ int			check_instructions(t_list **stack_a)
 	while (get_next_line(0, &line) > 0)
 	{
 		if (!(f_inst = parse_instruction(line)))
-			break ;
+			return (1);
 		f_inst(stack_a, &stack_b, line[ft_strlen(line) - 1]);
-		if (!stack_b && is_sorted(*stack_a))
-			return (0);
 	}
-	return (1);
+	if (!stack_b && is_sorted(*stack_a))
+		ft_putstr("OK\n");
+	else
+		ft_putstr("KO\n");
+	return (0);
 }
