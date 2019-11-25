@@ -6,15 +6,15 @@
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 10:35:38 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/25 16:00:48 by yforeau          ###   ########.fr       */
+/*   Updated: 2019/11/25 18:40:06 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "instructions.h"
 #include "checker_options.h"
 #include <limits.h>
-#define MAX_SPACE	"          "
-#define MAX_UNDER	"__________"
+#define MAX_SPACE	"           "
+#define MAX_UNDER	"___________"
 
 static int	get_field_width(t_list *stack_a)
 {
@@ -43,7 +43,7 @@ static void	print_instruction(t_list *stack_a, t_list *stack_b,
 	if (inst)
 		ft_printf("Exec %s:\n", inst);
 	else
-		ft_printf("_____________________\nInit a and b:\n");
+		ft_printf("_______________________\nInit a and b:\n");
 	while (stack_a || stack_b)
 	{
 		if (stack_a && stack_b)
@@ -62,7 +62,7 @@ static void	print_instruction(t_list *stack_a, t_list *stack_b,
 	}
 	ft_printf("%.*s %.*s\n", fw, MAX_UNDER, fw, MAX_UNDER);
 	ft_printf("%-*s %*s\n", fw, "a", fw, "b");
-	ft_printf("_____________________\n");
+	ft_printf("_______________________\n");
 }
 
 static int	is_sorted(t_list *stack)
