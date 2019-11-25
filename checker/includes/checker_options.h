@@ -1,19 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   check_instructions.h                               :+:      :+:    :+:   */
+/*   checker_options.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/22 10:36:36 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/25 15:14:26 by yforeau          ###   ########.fr       */
+/*   Created: 2019/11/25 15:17:04 by yforeau           #+#    #+#             */
+/*   Updated: 2019/11/25 17:58:41 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CHECK_INSTRUCTIONS_H
-# define CHECK_INSTRUCTIONS_H
-# include "libft.h"
+#ifndef CHECKER_OPTIONS_H
+# define CHECKER_OPTIONS_H
 
-int	check_instructions(t_list **stack, int options);
+# define OPT_COUNT	1
+# define O_VERBOSE	0x01
+# define OPT_STRING	"+v"
 
 #endif

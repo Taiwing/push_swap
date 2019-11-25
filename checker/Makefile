@@ -36,9 +36,9 @@ $(SUB1D)/libft.a:
 	make -C $(SUB1D)
 
 add_to_stack.o: libft.h
-check_instructions.o: instructions.h libft.h
+check_instructions.o: instructions.h libft.h checker_options.h
 instructions.o: libft.h
-main.o: add_to_stack.h libft.h check_instructions.h
+main.o: add_to_stack.h libft.h check_instructions.h checker_options.h
 %.o: %.c
 	@mkdir -p $(ODIR)
 	$(CC) -c $(CFLAGS) $< $(HFLAGS) -o $(ODIR)/$@
