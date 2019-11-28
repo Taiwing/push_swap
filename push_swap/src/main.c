@@ -16,12 +16,22 @@
 int	main(int argc, char **argv)
 {
 	t_psdata	psda;
+	char		**nb;
+	char		**split;
 
 	if (argc > 1)
 	{
 		ft_bzero((void *)&psda, sizeof(t_psdata));
-		while (*++argv && !add_to_stack(&psda, *argv))
-			++psda.size;
+		while (*++argv)
+		{
+			split = ft_split_whitespaces(*argv);
+			nb = split;
+			while (*nb && !add_to_stack(&psda, *nb++))
+				++psda.size;
+			ft_wtfree(split);
+			if (*nb)
+				break ;
+		}
 		if (*argv)
 			ft_exit("Error", 1);
 		psda.size_a = psda.size;
