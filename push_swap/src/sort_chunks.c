@@ -78,7 +78,7 @@ void		sort_chunks(t_psdata *psda)
 		}
 		get_elem_on_top(psda, to_move, psda->stack_a);
 		if (psda->stack_b)
-			get_elem_on_top(psda, find_min(psda->stack_b), psda->stack_b);
+			get_elem_on_top(psda, find_max(psda->stack_b), psda->stack_b);
 		inst_push(psda, 'b');
 		add_instruction(&psda->inst, g_instructions[4]);
 	}
