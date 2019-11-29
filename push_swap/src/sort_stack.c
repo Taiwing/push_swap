@@ -6,7 +6,7 @@
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/27 15:50:35 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/29 17:05:52 by yforeau          ###   ########.fr       */
+/*   Updated: 2019/11/29 21:42:00 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,6 @@ void		sort_stack(t_psdata *psda)
 		sort_five(psda);
 	else
 		sort_chunks(psda);
-//	optimize_inst_stack(&psda->inst);
+	optimize_inst_stack(&psda->inst);
 	print_inst_stack(psda->inst);
 }

@@ -40,7 +40,7 @@ $(SUB1D)/libft.a:
 	make -C $(SUB1D)
 
 add_to_stack.o: t_psdata.h libft.h
-inst_stack.o: libft.h
+inst_stack.o: libft.h instructions.h t_psdata.h
 instructions.o: t_psdata.h libft.h
 is_sorted.o: libft.h
 main.o: add_to_stack.h t_psdata.h libft.h sort_stack.h
