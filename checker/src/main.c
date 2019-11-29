@@ -6,7 +6,7 @@
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/22 10:37:50 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/25 18:18:41 by yforeau          ###   ########.fr       */
+/*   Updated: 2019/11/29 13:24:11 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,24 @@ static void	set_opt(int c, int *options, t_optdata *oda)
 		*options |= O_VERBOSE;
 }
 
+static int	parse_arguments(t_list **stack, char **argv)
+{
+	char	**split;
+	char	**nb;
+
+	while (*argv)
+	{
+		split = ft_split_whitespaces(*argv++);
+		nb = split;
+		while (*nb && !add_to_stack(stack, *nb))
+			++nb;
+		ft_wtfree(split);
+		if (*nb)
+			return (1);
+	}
+	return (0);
+}
+
 int			main(int argc, char **argv)
 {
 	int			c;
@@ -42,9 +60,8 @@ int			main(int argc, char **argv)
 		while ((c = ft_getopt_long(argc, argv, &oda)) != -1 && c != '?')
 			set_opt(c, &options, &oda);
 		argv = argv + oda.optind;
-		while (*argv && !add_to_stack(&stack, *argv++))
-			;
-		if (*argv || check_instructions(&stack, options))
+		if (parse_arguments(&stack, argv)
+			|| check_instructions(&stack, options))
 			ft_exit("Error", 1);
 	}
 	ft_heap_collector(NULL, FT_COLLEC_FREE);
