@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+make -C checker 2>&1 > /dev/null
+make -C comb_gen 2>&1 > /dev/null
+make -C push_swap 2>&1 > /dev/null
+
+comb_size=0
+
+while [ $comb_size -lt 5 ]; do
+	comb_size=$((comb_size+1))
+	combs=$(comb_gen/comb_gen $comb_size)
+	while read line; do
+		echo -n "Testing with '$line': "
+		inst=$(push_swap/push_swap $line)
+		if [ $(echo -n "$inst" | checker/checker $line) == "OK" ]; then
+			len="$(echo -n "$inst" | wc -w | tr -d '[:space:]')"
+			echo "found solution in $len instructions"
+		else
+			echo "invalid solution :("
+			echo "$inst"
+			exit 1
+		fi
+	done <<< "$combs"
+done
