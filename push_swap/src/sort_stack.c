@@ -6,7 +6,7 @@
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/27 15:50:35 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/27 18:00:13 by yforeau          ###   ########.fr       */
+/*   Updated: 2019/11/29 13:59:22 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ const int	g_sort_five[10][6] = {
 	{5, 3, 3, 8, -1, -1},
 	{8, 3, 8, 3, 8, -1},
 	{7, 3, 8, 3, 5, -1},
-	{8, 3, 3, 5, 5, -1},
+	{8, 3, 3, 8, 8, -1},
 	{3, 8, 3, 8, 8, -1},
 	{3, 3, 5, 5, -1, -1}
 };
@@ -97,7 +97,8 @@ static void	sort_four(t_psdata *psda)
 
 	inst_push(psda, 'b');
 	add_instruction(&psda->inst, g_instructions[4]);
-	sort_three(psda);
+	if (!is_sorted(psda->stack_a))
+		sort_three(psda);
 	ind = ft_lst_find_index(psda->sorted_stack, psda->stack_b->content, int_cmp);
 	if (!ind || ind == 3)
 	{
@@ -107,6 +108,8 @@ static void	sort_four(t_psdata *psda)
 	else
 	{
 		repeat_instruction(psda, inst_rotate, ind, (char *)g_instructions[5]);
+		inst_push(psda, 'a');
+		add_instruction(&psda->inst, g_instructions[3]);
 		repeat_instruction(psda, inst_reverse_rotate,
 			ind, (char *)g_instructions[8]);
 	}
@@ -127,7 +130,8 @@ static void	sort_five(t_psdata *psda)
 	add_instruction(&psda->inst, g_instructions[4]);
 	inst_push(psda, 'b');
 	add_instruction(&psda->inst, g_instructions[4]);
-	sort_three(psda);
+	if (!is_sorted(psda->stack_a))
+		sort_three(psda);
 	pair[0] = ft_lst_find_index(psda->sorted_stack,
 				psda->stack_b->content, int_cmp);
 	pair[1] = ft_lst_find_index(psda->sorted_stack,
