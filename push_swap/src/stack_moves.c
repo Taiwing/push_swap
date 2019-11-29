@@ -6,7 +6,7 @@
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/27 17:55:38 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/27 20:08:06 by yforeau          ###   ########.fr       */
+/*   Updated: 2019/11/29 17:26:12 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "add_to_stack.h"
 
 void	repeat_instruction(t_psdata *psda, void (*f)(t_psdata *psda, char arg),
-			unsigned int n, char *cmd)
+			unsigned int n, const char *cmd)
 {
 	char	arg;
 
@@ -35,6 +35,7 @@ void	insert_elem(t_psdata *psda, t_list *elem, t_list **target);
 	if (int_cmp(elem->content, from->content))
 		get_elem_on_top(psda, elem, from);
 }
+*/
 
 void	get_elem_on_top(t_psdata *psda, t_list *elem, t_list *stack)
 {
@@ -50,6 +51,26 @@ void	get_elem_on_top(t_psdata *psda, t_list *elem, t_list *stack)
 	nb_moves = i_elem > len - i_elem ? i_elem - len : i_elem;
 	f = nb_moves < 0 ? inst_reverse_rotate : inst_rotate;
 	cmd = (nb_moves < 0 ? 8 : 5) + (stack == psda->stack_b);
-	repeat_instruction(psda, f, nb_moves < 0 ? -nb_moves : nb_moves, cmd);
+	repeat_instruction(psda, f, nb_moves < 0 ? -nb_moves : nb_moves,
+		g_instructions[cmd]);
 }
-*/
+
+t_list	*find_max(t_list *stack)
+{
+	t_list	*max;
+
+	max = stack;
+	while ((stack = stack->next))
+		max = *(int *)stack->content > *(int *)max->content ? stack : max;
+	return (max);
+}
+
+t_list	*find_min(t_list *stack)
+{
+	t_list	*min;
+
+	min = stack;
+	while ((stack = stack->next))
+		min = *(int *)stack->content < *(int *)min->content ? stack : min;
+	return (min);
+}

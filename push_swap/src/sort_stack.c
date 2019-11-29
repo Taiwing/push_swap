@@ -6,7 +6,7 @@
 /*   By: yforeau <yforeau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/27 15:50:35 by yforeau           #+#    #+#             */
-/*   Updated: 2019/11/29 13:59:22 by yforeau          ###   ########.fr       */
+/*   Updated: 2019/11/29 17:05:52 by yforeau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "inst_stack.h"
 #include "instructions.h"
 #include "is_sorted.h"
+#include "sort_chunks.h"
 
 const int	g_sort_five[10][6] = {
 	{3, 3, -1, -1, -1, -1},
@@ -107,11 +108,11 @@ static void	sort_four(t_psdata *psda)
 	}
 	else
 	{
-		repeat_instruction(psda, inst_rotate, ind, (char *)g_instructions[5]);
+		repeat_instruction(psda, inst_rotate, ind, g_instructions[5]);
 		inst_push(psda, 'a');
 		add_instruction(&psda->inst, g_instructions[3]);
 		repeat_instruction(psda, inst_reverse_rotate,
-			ind, (char *)g_instructions[8]);
+			ind, g_instructions[8]);
 	}
 	if (ind == 3)
 	{
@@ -161,10 +162,7 @@ void		sort_stack(t_psdata *psda)
 	else if (psda->size_a == 5)
 		sort_five(psda);
 	else
-		ft_printf("WTF ?!?!\n");
-	/*
 		sort_chunks(psda);
-	optimize_inst_stack(&psda->inst);
-	*/
+//	optimize_inst_stack(&psda->inst);
 	print_inst_stack(psda->inst);
 }

@@ -17,6 +17,7 @@ SRCC			=	add_to_stack.c\
 					instructions.c\
 					is_sorted.c\
 					main.c\
+					sort_chunks.c\
 					sort_stack.c\
 					stack_moves.c\
 
@@ -43,8 +44,9 @@ inst_stack.o: libft.h
 instructions.o: t_psdata.h libft.h
 is_sorted.o: libft.h
 main.o: add_to_stack.h t_psdata.h libft.h sort_stack.h
+sort_chunks.o: instructions.h t_psdata.h libft.h stack_moves.h
 sort_stack.o: add_to_stack.h t_psdata.h libft.h stack_moves.h inst_stack.h\
-	instructions.h is_sorted.h
+	instructions.h is_sorted.h sort_chunks.h
 stack_moves.o: instructions.h t_psdata.h libft.h add_to_stack.h
 %.o: %.c
 	@mkdir -p $(ODIR)
