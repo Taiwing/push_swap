@@ -17,13 +17,30 @@
 #define SLOPE		0.015
 #define INTERCEPT	3.5
 
+static int	get_chunk_size(int i, int nb_chunks, int stack_size)
+{
+	static int	intercept = 0;
+	static int	slope = 0;
+	double		d_slope;
+	int			base;
+	int			min;
+
+	if (!i)
+	{
+		base = stack_size / nb_chunks;
+		min = base / 2;
+		intercept = base + min;
+		d_slope = (double)-base / (double)(nb_chunks - 1);
+		slope = d_slope < (double)(int)d_slope ? (int)d_slope - 1 : (int)d_slope;
+	}
+	return (slope * i + intercept);
+}
+
 static void	init_chunks(t_psdata *psda, t_list *sorted_stack, int stack_size)
 {
-	int		chunk_size;
 	int		i;
 
 	psda->nb_chunks = (int)(SLOPE * (double)stack_size + INTERCEPT);
-	chunk_size = stack_size / psda->nb_chunks;
 	psda->chunks = (int *)ft_memalloc(psda->nb_chunks * sizeof(int));
 	i = -1;
 	while (sorted_stack && ++i < psda->nb_chunks)
@@ -31,17 +48,12 @@ static void	init_chunks(t_psdata *psda, t_list *sorted_stack, int stack_size)
 		if (i == psda->nb_chunks - 1)
 			sorted_stack = ft_lst_last(sorted_stack);
 		else
-			sorted_stack = ft_lst_at(sorted_stack, chunk_size - 1);
+			sorted_stack = ft_lst_at(sorted_stack,
+				get_chunk_size(i, psda->nb_chunks, stack_size) - 1);
 		psda->chunks[i] = *(int *)sorted_stack->content;
 		sorted_stack = sorted_stack->next;
 	}
 }
-/*
-static t_list	*get_closest(t_psdata *psda, t_list *a, t_list *b)
-{
-	
-}
-*/
 
 static t_list	*get_chunk_values(t_psdata *psda, int chunk)
 {
@@ -50,9 +62,9 @@ static t_list	*get_chunk_values(t_psdata *psda, int chunk)
 	t_list	*to_move;
 
 	i = 0;
+	ptr = NULL;
 	to_move = NULL;
-	ptr = psda->stack_a;
-	while (ptr)
+	while ((ptr = !ptr ? psda->stack_a : ptr->next))
 	{
 		if (*(int *)ptr->content <= psda->chunks[chunk])
 		{
@@ -67,7 +79,6 @@ static t_list	*get_chunk_values(t_psdata *psda, int chunk)
 			else
 				to_move = ptr;
 		}
-		ptr = ptr->next;
 		++i;
 	}
 	return (to_move);

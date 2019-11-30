@@ -29,53 +29,38 @@ function random_comb () {
 	comb=$(echo -n $comb | tr "\n" " ")
 }
 
-while [ $comb_size -lt 6 ]; do
-	combs=$(comb_gen/comb_gen $comb_size)
-	while read line; do
-		test_combo "$line"
-		total_len=$(echo $total_len+$len | bc)
-		comb_count=$((comb_count+1))
-	done <<< "$combs"
-	if [ $comb_count -gt 1 ]; then
-		comb_count=$((comb_count-1))
+while [ $comb_size -lt 900 ]; do
+	if [ $comb_size -lt 6 ]; then
+		comb_count=0
+		combs=$(comb_gen/comb_gen $comb_size)
+		while read line; do
+			test_combo "$line"
+			total_len=$(echo $total_len+$len | bc)
+			comb_count=$((comb_count+1))
+		done <<< "$combs"
+		if [ $comb_count -gt 1 ]; then
+			comb_count=$((comb_count-1))
+			avg=$(echo 'scale=4;'$total_len/$comb_count | bc)
+		fi
+	else
+		i=0
+		comb_count=200
+		while [ $i -lt $comb_count ]; do
+			random_comb 0 10000 $comb_size
+			test_combo "$comb"
+			total_len=$(echo $total_len+$len | bc)
+			i=$((i+1))
+		done
 		avg=$(echo 'scale=4;'$total_len/$comb_count | bc)
 	fi
-	echo "Sorted lists of $comb_size numbers in an average of $avg instructions."
-	total_len="0"
+	echo "Sorted $comb_count lists of $comb_size numbers in an average of $avg instructions."
 	avg="0"
-	comb_count=0
-	comb_size=$((comb_size+1))
+	total_len="0"
+	if [ $comb_size -lt 11 ]; then
+		comb_size=$((comb_size+1))
+	elif [ $comb_size -lt 100 ]; then
+		comb_size=100
+	else
+		comb_size=$((comb_size+400))
+	fi
 done
-
-comb_size=100
-comb_count=500
-avg="0"
-i=0
-
-while [ $i -lt $comb_count ]; do
-	random_comb 0 150 $comb_size
-	test_combo "$comb"
-	total_len=$(echo $total_len+$len | bc)
-	i=$((i+1))
-done
-
-avg=$(echo 'scale=4;'$total_len/$comb_count | bc)
-echo "total_len = $total_len; comb_count = $comb_count"
-echo "Sorted lists of $comb_size numbers in an average of $avg instructions."
-
-total_len="0"
-comb_size=500
-comb_count=500
-avg="0"
-i=0
-
-while [ $i -lt $comb_count ]; do
-	random_comb 0 10000 $comb_size
-	test_combo "$comb"
-	total_len=$(echo $total_len+$len | bc)
-	i=$((i+1))
-done
-
-avg=$(echo 'scale=4;'$total_len/$comb_count | bc)
-echo "total_len = $total_len; comb_count = $comb_count"
-echo "Sorted lists of $comb_size numbers in an average of $avg instructions."
