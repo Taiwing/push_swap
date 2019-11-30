@@ -44,7 +44,8 @@ inst_stack.o: libft.h instructions.h t_psdata.h
 instructions.o: t_psdata.h libft.h
 is_sorted.o: libft.h
 main.o: add_to_stack.h t_psdata.h libft.h sort_stack.h
-sort_chunks.o: instructions.h t_psdata.h libft.h stack_moves.h
+sort_chunks.o: instructions.h t_psdata.h libft.h stack_moves.h add_to_stack.h\
+	is_sorted.h
 sort_stack.o: add_to_stack.h t_psdata.h libft.h stack_moves.h inst_stack.h\
 	instructions.h is_sorted.h sort_chunks.h
 stack_moves.o: instructions.h t_psdata.h libft.h add_to_stack.h

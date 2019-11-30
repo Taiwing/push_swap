@@ -9,23 +9,29 @@ comb_count=0
 len="0"
 total_len="0"
 avg="0"
+comb=""
 
 function test_combo () {
 	inst=$(push_swap/push_swap $1)
 	if [ $(echo -n "$inst" | checker/checker $1) == "OK" ]; then
 		len="$(echo -n "$inst" | wc -w | tr -d '[:space:]')"
-		echo "found solution in $len instructions"
+#		echo "found solution in $len instructions"
 	else
 		echo "invalid solution :("
-		echo "$inst"
+		echo "list:"
+		echo "'$1'"
 		exit 1
 	fi
+}
+
+function random_comb () {
+	comb=$(gshuf -i $1-$2 -n $3)
+	comb=$(echo -n $comb | tr "\n" " ")
 }
 
 while [ $comb_size -lt 6 ]; do
 	combs=$(comb_gen/comb_gen $comb_size)
 	while read line; do
-		echo -n "Testing with '$line': "
 		test_combo "$line"
 		total_len=$(echo $total_len+$len | bc)
 		comb_count=$((comb_count+1))
@@ -42,12 +48,12 @@ while [ $comb_size -lt 6 ]; do
 done
 
 comb_size=100
-comb_count=30
+comb_count=500
 avg="0"
 i=0
 
 while [ $i -lt $comb_count ]; do
-	comb=$(gshuf -i 0-150 -n $comb_size | tr "\n" " ")
+	random_comb 0 150 $comb_size
 	test_combo "$comb"
 	total_len=$(echo $total_len+$len | bc)
 	i=$((i+1))
@@ -57,13 +63,14 @@ avg=$(echo 'scale=4;'$total_len/$comb_count | bc)
 echo "total_len = $total_len; comb_count = $comb_count"
 echo "Sorted lists of $comb_size numbers in an average of $avg instructions."
 
+total_len="0"
 comb_size=500
-comb_count=30
+comb_count=500
 avg="0"
 i=0
 
 while [ $i -lt $comb_count ]; do
-	comb=$(gshuf -i 0-10000 -n $comb_size | tr "\n" " ")
+	random_comb 0 10000 $comb_size
 	test_combo "$comb"
 	total_len=$(echo $total_len+$len | bc)
 	i=$((i+1))

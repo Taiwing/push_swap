@@ -11,6 +11,8 @@
 
 #include "instructions.h"
 #include "stack_moves.h"
+#include "add_to_stack.h"
+#include "is_sorted.h"
 
 #define SLOPE		0.015
 #define INTERCEPT	3.5
@@ -34,6 +36,12 @@ static void	init_chunks(t_psdata *psda, t_list *sorted_stack, int stack_size)
 		sorted_stack = sorted_stack->next;
 	}
 }
+/*
+static t_list	*get_closest(t_psdata *psda, t_list *a, t_list *b)
+{
+	
+}
+*/
 
 static t_list	*get_chunk_values(t_psdata *psda, int chunk)
 {
@@ -52,6 +60,9 @@ static t_list	*get_chunk_values(t_psdata *psda, int chunk)
 			{
 				to_move = ptr;
 				ptr = ft_lst_at(ptr, psda->size_a - i - 1);
+				to_move = *(int *)ptr->content <= psda->chunks[chunk] &&
+					*(int *)ptr->content < *(int *)to_move->content ?
+					ptr : to_move;
 			}
 			else
 				to_move = ptr;
@@ -62,7 +73,7 @@ static t_list	*get_chunk_values(t_psdata *psda, int chunk)
 	return (to_move);
 }
 
-void		sort_chunks(t_psdata *psda)
+void			sort_chunks(t_psdata *psda)
 {
 	t_list	*to_move;
 	int		i;
@@ -71,21 +82,16 @@ void		sort_chunks(t_psdata *psda)
 	i = 0;
 	while (psda->size_a)
 	{
-		if (!(to_move = get_chunk_values(psda, i)))
-		{
-			++i;
+		if (!(to_move = get_chunk_values(psda, i)) && ++i)
 			continue ;
-		}
 		get_elem_on_top(psda, to_move, psda->stack_a);
 		if (psda->stack_b)
 			get_elem_on_top(psda, find_max(psda->stack_b), psda->stack_b);
-		inst_push(psda, 'b');
-		add_instruction(&psda->inst, g_instructions[4]);
+		repeat_instruction(psda, inst_push, 1, g_instructions[4]);
 	}
 	while (psda->size_b)
 	{
 		get_elem_on_top(psda, find_max(psda->stack_b), psda->stack_b);
-		inst_push(psda, 'a');
-		add_instruction(&psda->inst, g_instructions[3]);
+		repeat_instruction(psda, inst_push, 1, g_instructions[3]);
 	}
 }
