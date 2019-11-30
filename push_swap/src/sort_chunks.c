@@ -14,8 +14,8 @@
 #include "add_to_stack.h"
 #include "is_sorted.h"
 
-#define SLOPE		0.015
-#define INTERCEPT	3.5
+#define SLOPE		0.0225
+#define INTERCEPT	4.75
 
 static int	get_chunk_size(int i, int nb_chunks, int stack_size)
 {
@@ -36,10 +36,7 @@ static int	get_chunk_size(int i, int nb_chunks, int stack_size)
 		while (i < nb_chunks - 1 && base <= stack_size)
 			base += get_chunk_size(++i, nb_chunks, stack_size);
 		intercept += (stack_size - base) / nb_chunks;
-		if (stack_size - base)
-			return (intercept + ((stack_size - base) % nb_chunks));
-		else
-			return (intercept);
+		return (intercept + ((stack_size - base) % nb_chunks));
 	}
 	return (slope * i + intercept);
 }
@@ -53,11 +50,8 @@ static void	init_chunks(t_psdata *psda, t_list *sorted_stack, int stack_size)
 	i = -1;
 	while (sorted_stack && ++i < psda->nb_chunks)
 	{
-		if (i == psda->nb_chunks - 1)
-			sorted_stack = ft_lst_last(sorted_stack);
-		else
-			sorted_stack = ft_lst_at(sorted_stack,
-				get_chunk_size(i, psda->nb_chunks, stack_size) - 1);
+		sorted_stack = ft_lst_at(sorted_stack,
+			get_chunk_size(i, psda->nb_chunks, stack_size) - 1);
 		psda->chunks[i] = *(int *)sorted_stack->content;
 		sorted_stack = sorted_stack->next;
 	}
