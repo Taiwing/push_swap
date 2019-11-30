@@ -32,6 +32,14 @@ static int	get_chunk_size(int i, int nb_chunks, int stack_size)
 		intercept = base + min;
 		d_slope = (double)-base / (double)(nb_chunks - 1);
 		slope = d_slope < (double)(int)d_slope ? (int)d_slope - 1 : (int)d_slope;
+		base = intercept;
+		while (i < nb_chunks - 1 && base <= stack_size)
+			base += get_chunk_size(++i, nb_chunks, stack_size);
+		intercept += (stack_size - base) / nb_chunks;
+		if (stack_size - base)
+			return (intercept + ((stack_size - base) % nb_chunks));
+		else
+			return (intercept);
 	}
 	return (slope * i + intercept);
 }

@@ -56,7 +56,7 @@ while [ $comb_size -lt 900 ]; do
 	echo "Sorted $comb_count lists of $comb_size numbers in an average of $avg instructions."
 	avg="0"
 	total_len="0"
-	if [ $comb_size -lt 11 ]; then
+	if [ $comb_size -lt 5 ]; then
 		comb_size=$((comb_size+1))
 	elif [ $comb_size -lt 100 ]; then
 		comb_size=100
