@@ -70,8 +70,7 @@ static t_list	*get_chunk_values(t_psdata *psda, int chunk)
 		{
 			to_move = ptr;
 			ptr = ft_lst_last(ptr);
-			to_move = *(int *)ptr->content <= psda->chunks[chunk] &&
-				*(int *)ptr->content < *(int *)to_move->content ?
+			to_move = *(int *)ptr->content < *(int *)to_move->content ?
 				ptr : to_move;
 		}
 		ptr = ptr->next;
