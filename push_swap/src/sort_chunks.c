@@ -60,22 +60,16 @@ static void	init_chunks(t_psdata *psda, t_list *sorted_stack, int stack_size)
 static t_list	*get_chunk_values(t_psdata *psda, int chunk)
 {
 	t_list	*ptr;
-	t_list	*to_move;
+	t_list	*val;
 
-	to_move = NULL;
+	val = NULL;
 	ptr = psda->stack_a;
-	while (ptr)
-	{
-		if (*(int *)ptr->content <= psda->chunks[chunk])
-		{
-			to_move = ptr;
-			ptr = ft_lst_last(ptr);
-			to_move = *(int *)ptr->content < *(int *)to_move->content ?
-				ptr : to_move;
-		}
+	while (ptr && *(int *)ptr->content > psda->chunks[chunk])
 		ptr = ptr->next;
-	}
-	return (to_move);
+	val = ptr;
+	if ((ptr = ft_lst_last(ptr)))
+		val = *(int *)ptr->content < *(int *)val->content ? ptr : val;
+	return (val);
 }
 
 void			sort_chunks(t_psdata *psda)
