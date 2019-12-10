@@ -138,13 +138,14 @@ class Visu:
 
     def rotate_internal(self, stack, stack_obj, can, color):
         first = stack.pop(0)
+        y = self.h * (len(stack) - 1)
+        x2 = ((self.sorted_stack.index(first) + 1) * self.w)
         stack.append(first)
-        can.delete(stack_obj.pop(0))
+        first = stack_obj.pop(0)
         for i in range(len(stack_obj)):
             can.move(stack_obj[i], 0, -self.h)
-        y = self.h * (len(stack_obj) - 1)
-        x2 = ((self.sorted_stack.index(first) + 1) * self.w)
-        stack_obj.append(can.create_rectangle(0, y, x2, y + self.h, fill=color))
+        stack_obj.append(first)
+        can.move(first, 0, y)
 
     def rotate(self, arg):
         if (arg == 'a' or arg == 'r') and len(self.stack_a) > 1:
@@ -156,12 +157,14 @@ class Visu:
     
     def reverse_rotate_internal(self, stack, stack_obj, can, color):
         last = stack.pop()
+        y = self.h * (len(stack) - 1)
+        x2 = ((self.sorted_stack.index(last) + 1) * self.w)
         stack.insert(0, last)
-        can.delete(stack_obj.pop())
+        last = stack_obj.pop()
         for i in range(len(stack_obj)):
             can.move(stack_obj[i], 0, self.h)
-        x2 = ((self.sorted_stack.index(last) + 1) * self.w)
-        stack_obj.insert(0, can.create_rectangle(0, 0, x2, self.h, fill=color))
+        stack_obj.insert(0, last)
+        can.move(last, 0, -y)
 
     def reverse_rotate(self, arg):
         if (arg == 'a' or arg == 'r') and len(self.stack_a) > 1:
