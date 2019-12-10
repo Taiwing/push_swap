@@ -4,8 +4,10 @@ from tkinter import *
 import subprocess
 import sys
 
-PUSH_SWAP_PATH="push_swap/push_swap"
+PUSH_SWAP_PATH = "push_swap/push_swap"
 inst_set = ("sa", "sb", "ss", "pa", "pb", "ra", "rb", "rr", "rra", "rrb", "rrr")
+D_FORWARD = 1
+D_BACKWARD = -1
 
 def get_input():
     numbers = []
@@ -42,6 +44,7 @@ class Visu:
         # visu data
         self.quit = False
         self.step = -1
+        self.dir = D_FORWARD
         len_a = len(self.stack_a)
         self.h = 30 if 800 / len_a > 30 else 800 / len_a
         self.w = 300 / len_a
@@ -192,11 +195,6 @@ class Visu:
         else:
             self.reverse_rotate(inst[-1])
 
-    def step_forward(self):
-        if self.step < self.inst_len - 1:
-            self.step += 1
-            self.exec_instruction(self.instructions[self.step])
-
     def checker(self):
         if self.stack_b != None:
             return False
@@ -204,7 +202,12 @@ class Visu:
 
     def mainf(self):
         #self.async_actions()
-        self.step_forward()
+        if self.dir == D_FORWARD and self.step < self.inst_len - 1:
+            self.step += 1
+            self.exec_instruction(self.instructions[self.step])
+        elif self.dir == D_BACKWARD and self.step > -1:
+            self.exec_instruction(self.instructions[self.step])
+            self.step -= 1
         self.left_canvas.update()
         self.right_canvas.update()
         if self.quit == True:
