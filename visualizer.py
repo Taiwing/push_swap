@@ -144,7 +144,7 @@ class Visu:
         if arg == 'b':
             self.push_b()
 
-    def rotate_internal(self, stack, stack_obj, can, color):
+    def rotate_internal(self, stack, stack_obj, can):
         first = stack.pop(0)
         y = self.h * (len(stack) - 1)
         x2 = ((self.sorted_stack.index(first) + 1) * self.w)
@@ -158,12 +158,12 @@ class Visu:
     def rotate(self, arg):
         if (arg == 'a' or arg == 'r') and len(self.stack_a) > 1:
             self.rotate_internal(self.stack_a,
-                self.stack_a_obj, self.left_canvas, "white")
+                self.stack_a_obj, self.left_canvas)
         if (arg == 'b' or arg == 'r') and len(self.stack_b) > 1:
             self.rotate_internal(self.stack_b,
-                self.stack_b_obj, self.right_canvas, "black")
+                self.stack_b_obj, self.right_canvas)
     
-    def reverse_rotate_internal(self, stack, stack_obj, can, color):
+    def reverse_rotate_internal(self, stack, stack_obj, can):
         last = stack.pop()
         y = self.h * (len(stack) - 1)
         x2 = ((self.sorted_stack.index(last) + 1) * self.w)
@@ -177,10 +177,10 @@ class Visu:
     def reverse_rotate(self, arg):
         if (arg == 'a' or arg == 'r') and len(self.stack_a) > 1:
             self.reverse_rotate_internal(self.stack_a,
-                self.stack_a_obj, self.left_canvas, "white")
+                self.stack_a_obj, self.left_canvas)
         if (arg == 'b' or arg == 'r') and len(self.stack_b) > 1:
             self.reverse_rotate_internal(self.stack_b,
-                self.stack_b_obj, self.right_canvas, "black")
+                self.stack_b_obj, self.right_canvas)
 
     def exec_instruction(self, inst):
         if inst[0] == 's':
