@@ -8,6 +8,9 @@ PUSH_SWAP_PATH = "push_swap/push_swap"
 inst_set = ("sa", "sb", "ss", "pa", "pb", "ra", "rb", "rr", "rra", "rrb", "rrr")
 D_FORWARD = 1
 D_BACKWARD = -1
+S_PAUSE = 0
+S_PLAY = 1
+S_ONE_STEP = 2
 
 def get_input():
     numbers = []
@@ -45,6 +48,7 @@ class Visu:
         self.quit = False
         self.step = -1
         self.dir = D_FORWARD
+        self.state = S_PLAY
         len_a = len(self.stack_a)
         self.h = 30 if 800 / len_a > 30 else 800 / len_a
         self.w = 300 / len_a
@@ -202,14 +206,16 @@ class Visu:
 
     def mainf(self):
         #self.async_actions()
-        if self.dir == D_FORWARD and self.step < self.inst_len - 1:
-            self.step += 1
-            self.exec_instruction(self.instructions[self.step])
-        elif self.dir == D_BACKWARD and self.step > -1:
-            self.exec_instruction(self.instructions[self.step])
-            self.step -= 1
-        self.left_canvas.update()
-        self.right_canvas.update()
+        if self.state == S_PLAY or self.state == S_ONE_STEP:
+            if self.dir == D_FORWARD and self.step < self.inst_len - 1:
+                self.step += 1
+                self.exec_instruction(self.instructions[self.step])
+            elif self.dir == D_BACKWARD and self.step > -1:
+                self.exec_instruction(self.instructions[self.step])
+                self.step -= 1
+            self.state = S_PAUSE if self.state == S_ONE_STEP else self.state
+            self.left_canvas.update()
+            self.right_canvas.update()
         if self.quit == True:
             self.quit = False
         else:
