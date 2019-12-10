@@ -64,6 +64,16 @@ class Visu:
         y = (self.win.winfo_screenheight() / 2) - (self.win_h / 2)
         return int(x), int(y)
 
+    def create_bar(self, side, x1, y1, x2, y2):
+        bar = None
+        if side == 'a':
+            bar = self.left_canvas.create_rectangle(x1, y1, x2 + 10, y2,
+                fill="white", outline="black")
+        elif side == 'b':
+            bar = self.right_canvas.create_rectangle(x1, y1, x2 + 10, y2,
+                fill="black", outline="white")
+        return bar
+
     def init_stacks(self):
         len_a = len(self.stack_a)
         if len_a == 0:
@@ -73,7 +83,7 @@ class Visu:
         for n in self.stack_a:
             x1, y1 = 0, y * self.h
             x2, y2 = (self.sorted_stack.index(n) + 1) * self.w, y1 + self.h
-            bar = self.left_canvas.create_rectangle(x1, y1, x2, y2, fill="white")
+            bar = self.create_bar('a', x1, y1, x2, y2)
             stack_a_obj.append(bar)
             y += 1
         return stack_a_obj, None
@@ -100,8 +110,7 @@ class Visu:
             for obj in self.stack_a_obj:
                 self.left_canvas.move(obj, 0, self.h)
         x2 = (self.sorted_stack.index(to_move) + 1) * self.w
-        to_move_obj = self.left_canvas.create_rectangle(0, 0, x2,
-            self.h, fill="white")
+        to_move_obj = self.create_bar('a', 0, 0, x2, self.h)
         if self.stack_a != None and len(self.stack_a) > 0:
             self.stack_a.insert(0, to_move)
             self.stack_a_obj.insert(0, to_move_obj)
@@ -121,8 +130,7 @@ class Visu:
             for obj in self.stack_b_obj:
                 self.right_canvas.move(obj, 0, self.h)
         x2 = ((self.sorted_stack.index(to_move) + 1) * self.w)
-        to_move_obj = self.right_canvas.create_rectangle(0, 0, x2,
-            self.h, fill="black")
+        to_move_obj = self.create_bar('b', 0, 0, x2, self.h)
         if self.stack_b != None and len(self.stack_b) > 0:
             self.stack_b.insert(0, to_move)
             self.stack_b_obj.insert(0, to_move_obj)
