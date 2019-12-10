@@ -20,10 +20,12 @@ class Visu:
     def __init__(self, numbers):
         # game data
         self.instructions = self.launch_push_swap(numbers)
+        self.inst_len = len(self.instructions)
         self.stack_a = []
         for s in numbers:
             self.stack_a.append(int(s))
         self.stack_b = []
+        self.sorted_stack = sorted(self.stack_a)
         # window data
         self.win = Tk()
         self.win_h = 800
@@ -39,7 +41,10 @@ class Visu:
         self.right_canvas.pack(side=RIGHT, expand=True, fill=BOTH)
         # visu data
         self.quit = False
-        self.step = 0
+        self.step = -1
+        len_a = len(self.stack_a)
+        self.h = 30 if 800 / len_a > 30 else 800 / len_a
+        self.w = 300 / len_a
         self.stack_a_obj, self.stack_b_obj = self.init_stacks()
         # launch mainf
         self.win.after(0, self.mainf)
@@ -64,17 +69,121 @@ class Visu:
         if len_a == 0:
             return None, None
         stack_a_obj = []
-        sorted_stack_a = sorted(self.stack_a)
-        h = 30 if 800 / len_a > 30 else 800 / len_a
-        w = 300 / len_a
         y = 0
         for n in self.stack_a:
-            x1, y1 = 0, y * h
-            x2, y2 = (sorted_stack_a.index(n) + 1) * w, y1 + h
+            x1, y1 = 0, y * self.h
+            x2, y2 = (self.sorted_stack.index(n) + 1) * self.w, y1 + self.h
             bar = self.left_canvas.create_rectangle(x1, y1, x2, y2, fill="white")
             stack_a_obj.append(bar)
             y += 1
         return stack_a_obj, None
+
+    def swap(self, arg):
+        stack = self.stack_a if arg == 'a' else self.stack_b
+        stack_obj = self.stack_a_obj if arg == 'a' else self.stack_b_obj
+        can = self.left_canvas if arg == 'a' else self.right_canvas
+        if len(stack) > 1 and len(stack_obj) > 1:
+            stack[0], stack[1] = stack[1], stack[0]
+            can.move(self.stack_a_obj[0], 0, self.h)
+            can.move(self.stack_a_obj[1], 0, -self.h)
+            stack_obj[0], stack_obj[1] = stack_obj[1], stack_obj[0]
+
+    def push_a(self):
+        if self.stack_b == None or len(self.stack_b) == 0:
+            return
+        to_move = self.stack_b.pop(0)
+        self.right_canvas.delete(self.stack_b_obj.pop(0))
+        x2 = (self.sorted_stack.index(to_move) + 1) * self.w
+        to_move_obj = self.left_canvas.create_rectangle(0, 0, x2,
+            self.h, fill="white")
+        if self.stack_b_obj != None:
+            for obj in self.stack_b_obj:
+                self.right_canvas.move(obj, 0, -self.h)
+        if self.stack_a_obj != None:
+            for obj in self.stack_a_obj:
+                self.left_canvas.move(obj, 0, self.h)
+        if self.stack_a != None and len(self.stack_a) > 0:
+            self.stack_a.insert(0, to_move)
+            self.stack_a_obj.insert(0, to_move_obj)
+        else:
+            self.stack_a = [to_move]
+            self.stack_a_obj = [to_move_obj]
+
+    def push_b(self):
+        if self.stack_a == None or len(self.stack_a) == 0:
+            return
+        to_move = self.stack_a.pop(0)
+        self.right_canvas.delete(self.stack_a_obj.pop(0))
+        x2 = ((self.sorted_stack.index(to_move) + 1) * self.w)
+        to_move_obj = self.right_canvas.create_rectangle(0, 0, x2,
+            self.h, fill="black")
+        if self.stack_a_obj != None:
+            for obj in self.stack_a_obj:
+                self.left_canvas.move(obj, 0, -self.h)
+        if self.stack_b_obj != None:
+            for obj in self.stack_b_obj:
+                self.right_canvas.move(obj, 0, self.h)
+        if self.stack_b != None and len(self.stack_b) > 0:
+            self.stack_b.insert(0, to_move)
+            self.stack_b_obj.insert(0, to_move_obj)
+        else:
+            self.stack_b = [to_move]
+            self.stack_b_obj = [to_move_obj]
+    
+    def push(self, arg):
+        if arg == 'a':
+            self.push_a()
+        if arg == 'b':
+            self.push_b()
+
+    def rotate_internal(self, stack, stack_obj, can):
+        first = stack.pop(0)
+        stack.append(first)
+        first = stack_obj.pop(0)
+        stack_obj.append(first)
+        for i in range(len(stack_obj) - 1):
+            can.move(stack_obj[i], 0, -self.h)
+        can.move(stack_obj[-1], 0, self.h * (len(stack_obj) - 1))
+
+    def rotate(self, arg):
+        if (arg == 'a' or arg == 'r') and len(self.stack_a) > 1:
+            self.rotate_internal(self.stack_a,
+                self.stack_a_obj, self.left_canvas)
+        if (arg == 'b' or arg == 'r') and len(self.stack_b) > 1:
+            self.rotate_internal(self.stack_b,
+                self.stack_b_obj, self.right_canvas)
+    
+    def reverse_rotate_internal(self, stack, stack_obj, can):
+        last = stack.pop()
+        stack.insert(0, last)
+        last = stack_obj.pop()
+        stack_obj.insert(0, last)
+        for i in range(1, len(stack_obj)):
+            can.move(stack_obj[i], 0, self.h)
+        can.move(stack_obj[0], 0, 0)
+
+    def reverse_rotate(self, arg):
+        if (arg == 'a' or arg == 'r') and len(self.stack_a) > 1:
+            self.reverse_rotate_internal(self.stack_a,
+                self.stack_a_obj, self.left_canvas)
+        if (arg == 'b' or arg == 'r') and len(self.stack_b) > 1:
+            self.reverse_rotate_internal(self.stack_b,
+                self.stack_b_obj, self.right_canvas)
+
+    def exec_instruction(self, inst):
+        if inst[0] == 's':
+            self.swap(inst[-1])
+        elif inst[0] == 'p':
+            self.push(inst[-1])
+        elif len(inst) == 2:
+            self.rotate(inst[-1])
+        else:
+            self.reverse_rotate(inst[-1])
+
+    def step_forward(self):
+        if self.step < self.inst_len - 1:
+            self.step += 1
+            self.exec_instruction(self.instructions[self.step])
 
     def checker(self):
         if self.stack_b != None:
@@ -83,6 +192,7 @@ class Visu:
 
     def mainf(self):
         #self.async_actions()
+        self.step_forward()
         if self.quit == True:
             self.quit = False
         else:
