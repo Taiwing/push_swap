@@ -321,7 +321,7 @@ class Visu:
                 self.old_dir = None
                 self.state = S_PLAY
                 self.play_pause()
-            elif self.step == self.inst_len - 1:
+            elif self.step == self.inst_len - 1 or self.step == -1:
                 self.play_pause()
             self.update_inst_labels()
             self.left_canvas.update()
