@@ -31,28 +31,63 @@ class Visu:
             self.stack_a.append(int(s))
         self.stack_b = []
         self.sorted_stack = sorted(self.stack_a)
-        # window data
+        # window
         self.win = Tk()
+        self.win.resizable(width=False, height=False)
+        self.win.title("Push Swap Visualizer")
+        # widgets
+        self.win.columnconfigure(0)
+        self.win.columnconfigure(1)
+        self.win.rowconfigure(0)
+        self.win.rowconfigure(1)
+        self.canvas_h = 800
+        self.canvas_w = 500
+        self.tool_box = Frame(self.win, bg="grey")
+        self.left_canvas = Canvas(self.win, bg="black", highlightthickness=0,
+                width=self.canvas_w, height=self.canvas_h)
+        self.right_canvas = Canvas(self.win, bg="white", highlightthickness=0,
+                width=self.canvas_w, height=self.canvas_h)
+        self.tool_box.grid(row=0, column=0, columnspan=2)
+        self.left_canvas.grid(row=1, column=0)
+        self.right_canvas.grid(row=1, column=1)
+        # tool_box content
+        self.dir_back = Button(self.tool_box, text="<<",
+            command=self.set_dir_back)
+        self.step_back = Button(self.tool_box, text="<",
+            command=self.step_back)
+        self.play_pause = Button(self.tool_box, text="||",
+            command=self.play_pause)
+        self.step_forward = Button(self.tool_box, text=">",
+            command=self.step_forw)
+        self.dir_forw = Button(self.tool_box, text=">>",
+            command=self.set_dir_forw)
+        self.dir_back.pack(side=LEFT)
+        self.step_back.pack(side=LEFT)
+        self.play_pause.pack(side=LEFT)
+        self.step_forward.pack(side=LEFT)
+        self.dir_forw.pack(side=LEFT)
+        self.inst_label = []
+        for i in range(9):
+            self.inst_label.append(Label(self.tool_box, text="___",
+                font="Courier", bg="black", fg="white"))
+            self.inst_label[i].pack(side=LEFT)
+        self.inst_label[4].configure(bg="white", fg="black")
+        # window size and position
         self.win_h = 800
         self.win_w = 1000
         x, y = self.get_start_pos()
-        self.win.geometry(str(self.win_w) + "x" + str(self.win_h) + "+"\
-            + str(x) + "+" + str(y))
-        self.win.resizable(width=False, height=False)
-        # widgets
-        self.left_canvas = Canvas(self.win, bg="black")
-        self.right_canvas = Canvas(self.win, bg="white")
-        self.left_canvas.pack(side=LEFT, expand=True, fill=BOTH)
-        self.right_canvas.pack(side=RIGHT, expand=True, fill=BOTH)
+        self.win.geometry("+" + str(x) + "+" + str(y))
         # visu data
         self.quit = False
         self.step = -1
         self.dir = D_FORWARD
+        self.old_dir = None
         self.state = S_PLAY
         len_a = len(self.stack_a)
-        self.h = 30 if 800 / len_a > 30 else 800 / len_a
+        self.h = 30 if self.canvas_h / len_a > 30 else self.canvas_h / len_a
         self.w = 300 / len_a
         self.stack_a_obj, self.stack_b_obj = self.init_stacks()
+        self.update_inst_labels()
         # launch mainf
         self.win.after(0, self.mainf)
 
@@ -70,6 +105,16 @@ class Visu:
         x = (self.win.winfo_screenwidth() / 2) - (self.win_w / 2)
         y = (self.win.winfo_screenheight() / 2) - (self.win_h / 2)
         return int(x), int(y)
+
+    def update_inst_labels(self):
+        for i in range(9):
+            cur = self.step + i - 4
+            if cur < 0 or cur > self.inst_len - 1:
+                self.inst_label[i].configure(text="___")
+            elif len(self.instructions[cur]) == 2:
+                self.inst_label[i].configure(text=self.instructions[cur] + "_")
+            else:
+                self.inst_label[i].configure(text=self.instructions[cur])
 
     def create_bar(self, side, x1, y1, x2, y2):
         bar = None
@@ -153,7 +198,7 @@ class Visu:
 
     def rotate_internal(self, stack, stack_obj, can):
         first = stack.pop(0)
-        y = self.h * (len(stack) - 1)
+        y = self.h * (len(stack_obj) - 1)
         x2 = ((self.sorted_stack.index(first) + 1) * self.w)
         stack.append(first)
         first = stack_obj.pop(0)
@@ -172,7 +217,7 @@ class Visu:
     
     def reverse_rotate_internal(self, stack, stack_obj, can):
         last = stack.pop()
-        y = self.h * (len(stack) - 1)
+        y = self.h * (len(stack_obj) - 1)
         x2 = ((self.sorted_stack.index(last) + 1) * self.w)
         stack.insert(0, last)
         last = stack_obj.pop()
@@ -193,16 +238,39 @@ class Visu:
         if inst[0] == 's':
             self.swap(inst[-1])
         elif inst[0] == 'p':
-            self.push(inst[-1])
+            if self.dir == D_FORWARD:
+                self.push(inst[-1])
+            elif self.dir == D_BACKWARD:
+                self.push('a' if inst[-1] == 'b' else 'b')
         elif len(inst) == 2:
-            self.rotate(inst[-1])
+            if self.dir == D_FORWARD:
+                self.rotate(inst[-1])
+            elif self.dir == D_BACKWARD:
+                self.reverse_rotate(inst[-1])
         else:
-            self.reverse_rotate(inst[-1])
+            if self.dir == D_FORWARD:
+                self.reverse_rotate(inst[-1])
+            elif self.dir == D_BACKWARD:
+                self.rotate(inst[-1])
 
-    def checker(self):
-        if self.stack_b != None:
-            return False
-        return self.stack_a == sorted(self.stack_a)
+    def set_dir_back(self):
+        self.dir = D_BACKWARD
+
+    def set_dir_forw(self):
+        self.dir = D_FORWARD
+
+    def play_pause(self):
+        self.state = S_PLAY if self.state == S_PAUSE else S_PAUSE
+
+    def step_back(self):
+        self.state = S_ONE_STEP
+        self.old_dir = self.dir
+        self.dir = D_BACKWARD
+
+    def step_forw(self):
+        self.state = S_ONE_STEP
+        self.old_dir = self.dir
+        self.dir = D_FORWARD
 
     def mainf(self):
         #self.async_actions()
@@ -213,7 +281,11 @@ class Visu:
             elif self.dir == D_BACKWARD and self.step > -1:
                 self.exec_instruction(self.instructions[self.step])
                 self.step -= 1
-            self.state = S_PAUSE if self.state == S_ONE_STEP else self.state
+            if self.state == S_ONE_STEP:
+                self.dir = self.old_dir
+                self.old_dir = None
+                self.state = S_PAUSE
+            self.update_inst_labels()
             self.left_canvas.update()
             self.right_canvas.update()
         if self.quit == True:
