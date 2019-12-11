@@ -11,6 +11,8 @@ D_BACKWARD = -1
 S_PAUSE = 0
 S_PLAY = 1
 S_ONE_STEP = 2
+MAX_H = 30
+MAX_W = 400
 
 def get_input():
     numbers = []
@@ -45,7 +47,7 @@ class Visu:
         self.tool_box = Frame(self.win, bg="white")
         self.left_canvas = Canvas(self.win, bg="black", highlightthickness=0,
                 width=self.canvas_w, height=self.canvas_h)
-        self.right_canvas = Canvas(self.win, bg="white", highlightthickness=0,
+        self.right_canvas = Canvas(self.win, bg="black", highlightthickness=0,
                 width=self.canvas_w, height=self.canvas_h)
         self.tool_box.grid(row=0, column=0, columnspan=2)
         self.left_canvas.grid(row=1, column=0)
@@ -67,11 +69,14 @@ class Visu:
             command=self.step_forw)
         self.dir_forw = Button(self.tool_box, text=">>",
             command=self.set_dir_forw)
+        self.color_mode = Button(self.tool_box, text="C",
+            command=self.set_color_mode)
         self.dir_back.pack(side=LEFT)
         self.step_back.pack(side=LEFT)
         self.play_pause.pack(side=LEFT)
         self.step_forward.pack(side=LEFT)
         self.dir_forw.pack(side=LEFT)
+        self.color_mode.pack(side=LEFT)
         # window size and position
         self.win_h = 800
         self.win_w = 1000
@@ -83,9 +88,10 @@ class Visu:
         self.dir = D_FORWARD
         self.old_dir = None
         self.state = S_PLAY
+        self.color = True
         len_a = len(self.stack_a)
-        self.h = 30 if self.canvas_h / len_a > 30 else self.canvas_h / len_a
-        self.w = 300 / len_a
+        self.h = MAX_H if self.canvas_h / len_a > MAX_H else self.canvas_h / len_a
+        self.w = MAX_W / len_a
         self.stack_a_obj, self.stack_b_obj = self.init_stacks()
         self.update_inst_labels()
         # launch mainf
@@ -115,16 +121,21 @@ class Visu:
                 self.inst_label[i].configure(text=self.instructions[cur] + "_")
             else:
                 self.inst_label[i].configure(text=self.instructions[cur])
+    
+    def set_color(self, index):
+        col = '#%02x%02x%02x' % (int(255 * (index - 0.3) * (index > 0.3)),
+            int(255 * index - ((510 * (index - 0.6)) * (index > 0.6))),
+            int((255 - 510 * index) * (index < 0.5)))
+        return col
 
     def create_bar(self, side, x1, y1, x2, y2):
-        bar = None
-        if side == 'a':
-            bar = self.left_canvas.create_rectangle(x1, y1, x2 + 10, y2,
-                fill="white", outline="black")
-        elif side == 'b':
-            bar = self.right_canvas.create_rectangle(x1, y1, x2 + 10, y2,
-                fill="black", outline="white")
-        return bar
+        fill_color = self.set_color(x2/MAX_W) if self.color else\
+            "white" if side == 'a' else 'black'
+        outline_color = "" if self.color else\
+            "black" if side == 'a' else 'white'
+        can = self.left_canvas if side == 'a' else self.right_canvas
+        return can.create_rectangle(x1, y1, x2 + 10, y2,
+            fill=fill_color, outline=outline_color)
 
     def init_stacks(self):
         len_a = len(self.stack_a)
@@ -271,6 +282,30 @@ class Visu:
         self.state = S_ONE_STEP
         self.old_dir = self.dir
         self.dir = D_FORWARD
+
+    def set_color_mode(self):
+        if self.color:
+            self.color = False
+            self.right_canvas.config(bg="white")
+            if len(self.stack_a_obj) > 0:
+                for obj in self.stack_a_obj:
+                    self.left_canvas.itemconfig(obj, fill="white", outline="black")
+            if len(self.stack_b_obj) > 0:
+                for obj in self.stack_b_obj:
+                    self.right_canvas.itemconfig(obj, fill="black", outline="white")
+        else:
+            self.color = True
+            self.right_canvas.config(bg="black")
+            if len(self.stack_a_obj) > 0:
+                for obj in self.stack_a_obj:
+                    x1, y1, x2, y2 = self.left_canvas.coords(obj)
+                    self.left_canvas.itemconfig(obj,
+                        fill=self.set_color(x2/MAX_W), outline="")
+            if len(self.stack_b_obj) > 0:
+                for obj in self.stack_b_obj:
+                    x1, y1, x2, y2 = self.right_canvas.coords(obj)
+                    self.right_canvas.itemconfig(obj,
+                        fill=self.set_color(x2/MAX_W), outline="")
 
     def mainf(self):
         #self.async_actions()
