@@ -61,11 +61,11 @@ class Visu:
         self.inst_label[4].configure(bg="white", fg="black")
         self.dir_back = Button(self.tool_box, text="<<",
             command=self.set_dir_back)
-        self.step_back = Button(self.tool_box, text="<",
+        self.step_back = Button(self.tool_box, text="<-",
             command=self.step_back)
-        self.play_pause = Button(self.tool_box, text="||",
+        self.play_pause_btn = Button(self.tool_box, text=">",
             command=self.play_pause)
-        self.step_forward = Button(self.tool_box, text=">",
+        self.step_forward = Button(self.tool_box, text="->",
             command=self.step_forw)
         self.dir_forw = Button(self.tool_box, text=">>",
             command=self.set_dir_forw)
@@ -73,7 +73,7 @@ class Visu:
             command=self.set_color_mode)
         self.dir_back.pack(side=LEFT)
         self.step_back.pack(side=LEFT)
-        self.play_pause.pack(side=LEFT)
+        self.play_pause_btn.pack(side=LEFT)
         self.step_forward.pack(side=LEFT)
         self.dir_forw.pack(side=LEFT)
         self.color_mode.pack(side=LEFT)
@@ -87,7 +87,7 @@ class Visu:
         self.step = -1
         self.dir = D_FORWARD
         self.old_dir = None
-        self.state = S_PLAY
+        self.state = S_PAUSE
         self.color = True
         len_a = len(self.stack_a)
         self.h = MAX_H if self.canvas_h / len_a > MAX_H else self.canvas_h / len_a
@@ -272,6 +272,7 @@ class Visu:
 
     def play_pause(self):
         self.state = S_PLAY if self.state == S_PAUSE else S_PAUSE
+        self.play_pause_btn.config(text=">" if self.state == S_PAUSE else "||")
 
     def step_back(self):
         self.state = S_ONE_STEP
@@ -308,7 +309,6 @@ class Visu:
                         fill=self.set_color(x2/MAX_W), outline="")
 
     def mainf(self):
-        #self.async_actions()
         if self.state == S_PLAY or self.state == S_ONE_STEP:
             if self.dir == D_FORWARD and self.step < self.inst_len - 1:
                 self.step += 1
@@ -319,14 +319,14 @@ class Visu:
             if self.state == S_ONE_STEP:
                 self.dir = self.old_dir
                 self.old_dir = None
-                self.state = S_PAUSE
+                self.state = S_PLAY
+                self.play_pause()
+            elif self.step == self.inst_len - 1:
+                self.play_pause()
             self.update_inst_labels()
             self.left_canvas.update()
             self.right_canvas.update()
-        if self.quit == True:
-            self.quit = False
-        else:
-            self.win.after(1, self.mainf)
+        self.win.after(1, self.mainf)
 
 
 numbers = get_input()
