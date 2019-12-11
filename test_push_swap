@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-make -C checker 2>&1 > /dev/null
-make -C comb_gen 2>&1 > /dev/null
-make -C push_swap 2>&1 > /dev/null
+make 2>&1 > /dev/null
 
 comb_size=1
 comb_count=0
@@ -10,10 +8,12 @@ len="0"
 total_len="0"
 avg="0"
 comb=""
+push_swap_path="push_swap/push_swap"
+checker_path="checker/checker"
 
 function test_combo () {
-	inst=$(push_swap/push_swap $1)
-	if [ $(echo -n "$inst" | checker/checker $1) == "OK" ]; then
+	inst=$($push_swap_path $1)
+	if [ $(echo -n "$inst" | $checker_path $1) == "OK" ]; then
 		len="$(echo -n "$inst" | wc -w | tr -d '[:space:]')"
 #		echo "found solution in $len instructions"
 	else
