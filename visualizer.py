@@ -42,7 +42,7 @@ class Visu:
         self.win.rowconfigure(1)
         self.canvas_h = 800
         self.canvas_w = 500
-        self.tool_box = Frame(self.win, bg="grey")
+        self.tool_box = Frame(self.win, bg="white")
         self.left_canvas = Canvas(self.win, bg="black", highlightthickness=0,
                 width=self.canvas_w, height=self.canvas_h)
         self.right_canvas = Canvas(self.win, bg="white", highlightthickness=0,
@@ -51,6 +51,12 @@ class Visu:
         self.left_canvas.grid(row=1, column=0)
         self.right_canvas.grid(row=1, column=1)
         # tool_box content
+        self.inst_label = []
+        for i in range(9):
+            self.inst_label.append(Label(self.tool_box, text="___",
+                font="Courier", bg="black", fg="white"))
+            self.inst_label[i].pack(side=LEFT)
+        self.inst_label[4].configure(bg="white", fg="black")
         self.dir_back = Button(self.tool_box, text="<<",
             command=self.set_dir_back)
         self.step_back = Button(self.tool_box, text="<",
@@ -66,12 +72,6 @@ class Visu:
         self.play_pause.pack(side=LEFT)
         self.step_forward.pack(side=LEFT)
         self.dir_forw.pack(side=LEFT)
-        self.inst_label = []
-        for i in range(9):
-            self.inst_label.append(Label(self.tool_box, text="___",
-                font="Courier", bg="black", fg="white"))
-            self.inst_label[i].pack(side=LEFT)
-        self.inst_label[4].configure(bg="white", fg="black")
         # window size and position
         self.win_h = 800
         self.win_w = 1000
